@@ -3,8 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [referral, setReferral] = useState("");
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,8 +12,6 @@ const Home = () => {
 
     if (userData) {
       setName(userData.name);
-      setAge(userData.age);
-      setReferral(userData.referral);
     } else {
       navigate("/");
     }
