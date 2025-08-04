@@ -5,16 +5,42 @@ const Home = () => {
   const [name, setName] = useState("");
 
   const navigate = useNavigate();
-
+  // const [timePassed, setTimePassed] = useState(0);
+  const [time, setTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [timeStudied, setTimeStudied] = useState(0);
   useEffect(() => {
+    setTime(new Date());
     const userDataString = localStorage.getItem("userData");
     const userData = userDataString ? JSON.parse(userDataString) : null;
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const seconds = Math.trunc(
+        (Number(currentTime.getTime()) - Number(time.getTime())) / 1000
+      );
+      console.log("Interval tick:", now, "secondsStudied:", seconds);
+      setCurrentTime(now);
+      setTimeStudied(seconds);
+    }, 1000);
 
     if (userData) {
       setName(userData.name);
     } else {
       navigate("/");
     }
+    return () => clearInterval(interval); // cleanup
+    // const timeUsedString = localStorage.getItem("timePassed");
+    // const timeUsed = timeUsedString ? JSON.parse(timeUsedString) : null;
+
+    // if (timeUsed) {
+    //   setTimePassed(timeUsed);
+    // }
+
+    // setInterval(() => {
+    //   setTimePassed(timePassed + 1);
+    //   localStorage.setItem("timePassed", JSON.stringify(timePassed));
+    // }, 1000);
   }, []);
 
   return (
@@ -89,7 +115,7 @@ const Home = () => {
               <h1 className="text-2xl font-bold text-purple-700">Streak</h1>
               <p className="text-5xl font-bold text-orange-600">🔥 7 days</p>
               <p className="text-sm text-orange-600 mt-2 font-bold">
-                You've studied 1h 25m today! Keep it up!
+                You've studied {timeStudied}s today! Keep it up!
               </p>
             </div>
             <div className="bg-purple-100 p-5 rounded-2xl">
