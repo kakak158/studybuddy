@@ -1,27 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
+  //localStorage.removeItem("startTime");
+
   const [name, setName] = useState("");
 
   const navigate = useNavigate();
   // const [timePassed, setTimePassed] = useState(0);
-  const [time, setTime] = useState(new Date());
-  const [currentTime, setCurrentTime] = useState(new Date());
-  const [timeStudied, setTimeStudied] = useState(0);
+
+  const startRef = useRef<number | null>(null);
+
+  const [timeStudied, setTimeStudied] = useState("");
   useEffect(() => {
-    setTime(new Date());
     const userDataString = localStorage.getItem("userData");
     const userData = userDataString ? JSON.parse(userDataString) : null;
 
+    const startTimeString = localStorage.getItem("startTime");
+    const startTime = startTimeString ? JSON.parse(startTimeString) : null;
+
+    if (startTime) {
+      startRef.current = startTime;
+    } else {
+      startRef.current = Date.now();
+    }
+
     const interval = setInterval(() => {
-      const now = new Date();
-      const seconds = Math.trunc(
-        (Number(currentTime.getTime()) - Number(time.getTime())) / 1000
-      );
-      console.log("Interval tick:", now, "secondsStudied:", seconds);
-      setCurrentTime(now);
-      setTimeStudied(seconds);
+      if (startRef.current !== null) {
+        const elapsedMs = Date.now() - startRef.current;
+        const seconds = Math.floor(elapsedMs / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        setTimeStudied(`${hours}h ${minutes}m`);
+      }
     }, 1000);
 
     if (userData) {
@@ -43,6 +55,10 @@ const Home = () => {
     // }, 1000);
   }, []);
 
+  useEffect(() => {
+    localStorage.setItem("startTime", JSON.stringify(startRef.current));
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-bl from-violet-700 to-fuchsia-700 text-white">
       {/* Center content with max width */}
@@ -56,7 +72,7 @@ const Home = () => {
           <h1 className="mb-5 text-4xl font-extrabold text-purple-700">
             Dashboard
           </h1>
-          <div className="grid md:grid-cols-2 grid-cols-1 gap-2">
+          <div className="grid md:grid-cols`-2 grid-cols-1 gap-2">
             <div className="bg-purple-100 p-5 rounded-2xl">
               <h1 className="text-2xl font-bold text-purple-700">My Apps</h1>
               <div className="grid grid-cols-2 gap-2 m-2">
@@ -114,9 +130,15 @@ const Home = () => {
             <div className="bg-purple-100 p-5 rounded-2xl">
               <h1 className="text-2xl font-bold text-purple-700">Streak</h1>
               <p className="text-5xl font-bold text-orange-600">🔥 7 days</p>
-              <p className="text-sm text-orange-600 mt-2 font-bold">
-                You've studied {timeStudied}s today! Keep it up!
-              </p>
+              {timeStudied === "" ? (
+                <p className="text-sm text-orange-600 mt-2 font-bold">
+                  Loading...
+                </p>
+              ) : (
+                <p className="text-sm text-orange-600 mt-2 font-bold">
+                  You've studied {timeStudied} today! Keep it up!
+                </p>
+              )}
             </div>
             <div className="bg-purple-100 p-5 rounded-2xl">
               <h1 className="text-2xl font-bold text-purple-700">Goals</h1>
