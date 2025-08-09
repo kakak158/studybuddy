@@ -8,17 +8,21 @@ const StartScreen = () => {
   const [referral, setReferral] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
+    console.log("Form submitted");
+
     e.preventDefault();
     localStorage.setItem(
       "userData",
       JSON.stringify({ name, age, referral, formFilled: true })
     );
+    console.log(localStorage.getItem("userData"));
+
     navigate("/home"); // Navigate to dashboard
   };
   useEffect(() => {
     const userDataString = localStorage.getItem("userData");
     const userData = userDataString ? JSON.parse(userDataString) : null;
-    if (userData.formFilled === true) {
+    if (userData && userData.formFilled === true) {
       navigate("/home");
     }
   }, []);

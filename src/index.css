@@ -7,3 +7,21 @@
 body {
   background-color: #700ee8;
 }
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animated-orange-gradient {
+  background: linear-gradient(-45deg, #ff6b35, #f7931e, #ff8c00, #ff4500);
+  background-size: 400% 400%;
+  animation: gradientShift 3s ease infinite;
+}
